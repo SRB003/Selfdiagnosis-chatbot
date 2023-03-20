@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chat Window</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+      integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  
+    <style>
+      
+      #chat-window {
+        width: 85vw;
+        height: 60vh;
+        margin: 10vh auto;
+        border: 1px solid #ccc;
+        overflow-y: scroll;
+        padding: 2vh;
+        background-color: #fff;
+        border-radius: 2vh;
+        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+        font-family: Arial, sans-serif;
+      }
+
+      .user-message {
+        margin-bottom: 2vh;
+        text-align: right;
+      }
+
+      .bot-message {
+        margin-bottom: 10px;
+        text-align: left;
+        color: black;
+        background-color: #e5e5ea;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 80%;
+        word-wrap: break-word;
+      }
+
+      .bot-message::after {
+        content: "";
+        position: absolute;
+        bottom: -1.5vh;
+        left: -1vh;
+        border-width: 1.5vh 1.5vh 0 0;
+        border-style: solid;
+        border-color: #ccc transparent;
+      }
+
+      input[type="text"] {
+        width: 85%;
+        padding: 2vh;
+        margin: 2vh 0;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 2vh;
+        background-color: #f8f8f8;
+        font-size: 2vh;
+        font-family: Arial, sans-serif;
+      }
+
+      button {
+        width: 14%;
+        background-color: #094067;
+        color: #fff;
+        padding: 2vh;
+        margin: 2vh 0;
+        border: none;
+        border-radius: 2vh;
+        cursor: pointer;
+        font-size: 2vh;
+        font-family: Arial, sans-serif;
+      }
+
+      button:hover {
+        background-color: #256694;
+      }
+
+      /* Scroll to bottom button */
+      #scroll-button {
+        position: fixed;
+        bottom: 10vh;
+        right: 10vw;
+        background-color: #4caf50;
+        color: #fff;
+        padding: 2vh;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 2vh;
+        font-family: Arial, sans-serif;
+        box-shadow: 0px 2vh 4vh rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat-window">
+      <div class="bot-message">
+        Hi, I'm a chatbot. What symptom are you experiencing?
+      </div>
+    </div>
+    <input
+      type="text"
+      id="user-input"
+      placeholder="Enter the Symptoms..."
+    />
+    <button id="send-button">send</button>
+
+    <script>
+      let data;
+      fetch("data.json")
+        .then((response) => response.json())
+        .then((jsonData) => {
+          data = jsonData;
+        });
+
+      const sendButton = document.getElementById("send-button");
+      sendButton.addEventListener("click", sendMessage);
+
+      const userInput = document.getElementById("user-input");
+      userInput.addEventListener("keydown", function (event) {
+        if (event.keyCode === 13) {
+          sendMessage();
+        }
+      });
+
+      function sendMessage() {
+        const userInput = document.getElementById("user-input").value;
+        const userMessage = document.createElement("div");
+        userMessage.classList.add("user-message");
+        userMessage.textContent = userInput;
+        document.getElementById("chat-window").appendChild(userMessage);
+
+        const tokens = userInput.toLowerCase().match(/\w+/g);
+        const symptoms = tokens.filter((token) => data.symptoms_dict[token]);
+        let botMessage;
+        if (symptoms.length === 0) {
+          botMessage = "I'm sorry, I don't understand. Please enter a symptom.";
+        } else {
+          const disease = data.symptoms_dict[symptoms[0]];
+          const remedy = data.remedies_dict[disease];
+          botMessage = `Based on your symptom (${symptoms[0]}), it seems like you have ${disease}. Here is a home remedy you can try: ${remedy}`;
+        }
+
+        const botMessageElement = document.createElement("div");
+        botMessageElement.classList.add("bot-message");
+        botMessageElement.textContent = botMessage;
+        document.getElementById("chat-window").appendChild(botMessageElement);
+
+        document.getElementById("user-input").value = "";
+      }
+    </script>
+  </body>
+</html>

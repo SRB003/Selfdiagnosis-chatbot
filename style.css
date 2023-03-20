@@ -1,0 +1,23 @@
+*{
+    background-color: #d8eefe;
+}
+img{
+    height: 50%;
+    width: 45%;
+    padding-left: 50%;
+}
+
+.btn {
+    background-color:#3da9fc;
+    padding: 30px 75px;
+  font-size: 20px;
+  border-radius: 4px;   
+    color: white;  
+    margin-left: 10%; 
+    margin-bottom: 10%;
+    cursor: pointer; 
+    
+  }
+  
+
+  
